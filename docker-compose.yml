@@ -3,6 +3,7 @@ services:
     image: postgres:15
     volumes:
       - app-db-data:/var/lib/postgresql/data/pgdata
+      - ./data:/docker-entrypoint-initdb.d  # Mount local 'data' folder
     env_file:
       - ./.env
     environment:
