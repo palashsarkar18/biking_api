@@ -3,7 +3,7 @@ from fastapi import FastAPI, APIRouter, Depends
 from sqlmodel import Session, create_engine, SQLModel
 
 from sqlalchemy import text
-from .api.api_v1.endpoints import bikes
+from .api.api_v1.endpoints import bikes, amortization
 from .dependencies import get_db
 
 DATABASE_URI = "postgresql://postgres:db580f2e939baa98cb393fa1b680c6b17072ff1b42b0669f575c0f93e525a8d3@db:5432/vapaus" # TODO: Get the password from the .env file
@@ -45,3 +45,6 @@ def read_index(db: Session = Depends(get_db)) -> Any:
 
 app.include_router(router)
 app.include_router(bikes.router, prefix="/api/v1")
+app.include_router(amortization.router, prefix="/api/v1")
+
+# TODO: Reevaluate the project structure.
