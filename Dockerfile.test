@@ -19,5 +19,3 @@ COPY ./app /workspace/app
 # Copy test files
 COPY ./tests /workspace/tests 
 
-# Command to run tests
-CMD ["pytest", "tests/", "--cov=app", "--cov-report=html"]

@@ -26,7 +26,7 @@ services:
       dockerfile: Dockerfile.test
     depends_on:
       - db
-    command: ["pytest", "tests/", "--cov=app", "--cov-report=html"]
+    command: ["pytest", "tests/", "--cov=app", "--cov-report=term-missing"]
 
 volumes:
   app-db-data: # This volume is defined to store data for your PostgreSQL service persistently, ensuring it isn't lost between container restarts.
