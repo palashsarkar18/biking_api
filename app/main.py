@@ -48,9 +48,11 @@ def create_db_and_tables():
 
 @router.get("/")
 def read_index(db: Session = Depends(get_db)) -> Any:
-    result = db.execute(text("SELECT 1")).first() # TODO: Change execute to exec
+    # Using 'execute' with 'scalars' for executing raw SQL statements
+    # and then convert the results to a Pythonic format.
+    result = db.execute(text("SELECT 1")).scalars().first()
     return {
-        result[0] == 1,  # type: ignore
+        "database_connected": result == 1,  # type: ignore
     }
 
 
