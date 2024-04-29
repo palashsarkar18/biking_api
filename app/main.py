@@ -1,6 +1,7 @@
-from typing import Any, Generator
+from typing import Any
 from fastapi import FastAPI, APIRouter, Depends
 from sqlmodel import Session, create_engine, SQLModel
+from contextlib import asynccontextmanager
 
 from sqlalchemy import text
 from .api.api_v1.endpoints import bikes, amortization
@@ -14,14 +15,9 @@ app = FastAPI()
 router = APIRouter()
 
 
-def create_db_and_tables():
-    # TODO: Add error handling around the database initialization to manage 
-    # cases where the connection fails or credentials are incorrect.
-    SQLModel.metadata.create_all(bind=engine)
-
-
-@app.on_event("startup")
-def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup logic
     print("Starting up... creating database tables")
     try:
         create_db_and_tables()
@@ -29,6 +25,21 @@ def startup_event():
     except Exception as e:
         print(f"Error creating tables: {e}")
 
+    yield
+
+    # TODO: Optionally add shutdown logic
+    print("Application shutting down...")
+
+    # Explicitly close sessions
+    engine.dispose()  # This closes the connection pool, terminating all active sessions
+
+app.lifespan = lifespan
+
+
+def create_db_and_tables():
+    # TODO: Add error handling around the database initialization to manage 
+    # cases where the connection fails or credentials are incorrect.
+    SQLModel.metadata.create_all(bind=engine)
 
 # def get_db() -> Generator[Session, None, None]:  # pragma: no cover
 #     with Session(engine) as session:
@@ -37,7 +48,7 @@ def startup_event():
 
 @router.get("/")
 def read_index(db: Session = Depends(get_db)) -> Any:
-    result = db.execute(text("SELECT 1")).first()
+    result = db.execute(text("SELECT 1")).first() # TODO: Change execute to exec
     return {
         result[0] == 1,  # type: ignore
     }
