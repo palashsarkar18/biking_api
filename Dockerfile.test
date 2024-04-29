@@ -1,0 +1,23 @@
+FROM python:3.11
+
+WORKDIR /workspace
+
+# Install poetry
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/root/poetry python3 -
+ENV PATH="${PATH}:/root/poetry/bin"
+RUN poetry config virtualenvs.create false
+
+# Copy dependency files
+COPY pyproject.toml poetry.lock* /workspace/
+
+# Install dependencies, including test dependencies
+RUN poetry install --no-interaction --with test
+
+# Copy application files
+COPY ./app /workspace/app
+
+# Copy test files
+COPY ./tests /workspace/tests 
+
+# Command to run tests
+CMD ["pytest", "tests/", "--cov=app", "--cov-report=html"]

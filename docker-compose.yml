@@ -20,5 +20,15 @@ services:
     ports:
       - 8080:8080
 
+  tests:
+    build:
+      context: ./
+      dockerfile: Dockerfile.test
+    depends_on:
+      - db
+    command: ["pytest", "tests/", "--cov=app", "--cov-report=html"]
+
 volumes:
-  app-db-data:
+  app-db-data: # This volume is defined to store data for your PostgreSQL service persistently, ensuring it isn't lost between container restarts.
+
+# TODO: Data Mounts: You also have a data folder mounted to /docker-entrypoint-initdb.d in your PostgreSQL container, ensuring any SQL scripts in that folder are run on database initialization.
