@@ -3,7 +3,6 @@ services:
     image: postgres:15
     volumes:
       - app-db-data:/var/lib/postgresql/data/pgdata
-      - ./data:/docker-entrypoint-initdb.d  # Mount local 'data' folder
     env_file:
       - ./.env
     environment:
@@ -17,7 +16,6 @@ services:
       - db
     volumes:
       - ./:/workspace
-      - .env:/workspace/.env # TODO: Shouldn't the above statement also includes this, and it is redundant?
     ports:
       - 8080:8080
 
@@ -28,11 +26,8 @@ services:
     depends_on:
       - db
     volumes:
-      - ./:/workspace # TODO: Shouldn't the above statement also includes this, and it is redundant?
-      - .env:/workspace/.env
+      - ./:/workspace
     command: ["pytest", "tests/", "--cov=app", "--cov-report=term-missing"]
 
 volumes:
-  app-db-data: # This volume is defined to store data for your PostgreSQL service persistently, ensuring it isn't lost between container restarts.
-
-# TODO: Data Mounts: You also have a data folder mounted to /docker-entrypoint-initdb.d in your PostgreSQL container, ensuring any SQL scripts in that folder are run on database initialization.
+  app-db-data:

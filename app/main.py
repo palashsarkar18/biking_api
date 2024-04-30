@@ -2,6 +2,9 @@ from typing import Any
 from fastapi import FastAPI, APIRouter, Depends
 from sqlmodel import Session, create_engine, SQLModel
 from contextlib import asynccontextmanager
+from sqlalchemy.exc import OperationalError, DatabaseError
+from sqlalchemy_utils import create_database, database_exists
+import logging
 
 from sqlalchemy import text
 from .api.api_v1.endpoints import bikes, amortization
@@ -22,44 +25,85 @@ engine = create_engine(str(DATABASE_URI), pool_pre_ping=True)
 app = FastAPI()
 router = APIRouter()
 
+# Initialize logging
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logging.getLogger().handlers = [logging.StreamHandler()]
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup logic
-    print("Starting up... creating database tables")
+    logging.info("Starting up... creating database tables")
     try:
         create_db_and_tables()
-        print("Database tables created successfully.")
+        logging.info("Database tables created successfully.")
     except Exception as e:
-        print(f"Error creating tables: {e}")
+        logging.error(f"Error creating tables: {e}")
 
     yield
 
-    # TODO: Optionally add shutdown logic
-    print("Application shutting down...")
+    logging.info("Application shutting down...")
 
     # Explicitly close sessions
     engine.dispose()  # This closes the connection pool, terminating all active sessions
 
-app.lifespan = lifespan
+app = FastAPI(lifespan=lifespan)
+
+
+def read_sql_file(file_path: str) -> str:
+    """
+    Reads an SQL script file and returns its content as a string.
+    """
+    with open(file_path, "r") as sql_file:
+        sql_content = sql_file.read()
+    return sql_content
 
 
 def create_db_and_tables():
-    # TODO: Add error handling around the database initialization to manage 
-    # cases where the connection fails or credentials are incorrect.
-    # TODO: Run the sql script??
+    if not database_exists(DATABASE_URI):
+        create_database(DATABASE_URI)  # Create current database if not exists
+
+    # Create tables defined in SQLModel metadata
     SQLModel.metadata.create_all(bind=engine)
 
+    try:
+        # Test the database connection
+        with Session(engine) as session:
+            session.execute(text("SELECT 1"))
+
+        # Read and execute SQL script files here
+        sql_content = read_sql_file("/workspace/data/dump.sql")
+        session.execute(text(sql_content))
+
+        # Commit changes to apply them
+        session.commit()
+
+    except OperationalError as oe:
+        session.rollback()  # Roll back partial changes
+        logging.error(f"Database connection error: {oe}")
+    except DatabaseError as de:
+        session.rollback()  # Roll back partial changes
+        logging.error(f"Database initialization error: {de}")
+    except Exception as e:
+        session.rollback()  # Roll back partial changes
+        logging.error(f"General error during initialization: {e}")
 
 
 @router.get("/")
 def read_index(db: Session = Depends(get_db)) -> Any:
     # Using 'execute' with 'scalars' for executing raw SQL statements
     # and then convert the results to a Pythonic format.
-    result = db.execute(text("SELECT 1")).scalars().first()
-    return {
-        "database_connected": result == 1,  # type: ignore
-    }
+    try:
+        result = db.execute(text("SELECT 1")).scalars().first()
+        return {
+            "database_connected": result == 1,  # type: ignore
+        }
+    except Exception as e:
+        logging.error(f"Database connection error: {e}")
+
+        return {
+            "database_connected": False,
+        }
 
 
 app.include_router(router)
