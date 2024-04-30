@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy import text
 from .api.api_v1.endpoints import bikes, amortization
 from .dependencies import get_db
-from .helpers import get_env_variable
+from .config import get_env_variable
 
 POSTGRES_USER = get_env_variable("POSTGRES_USER")
 POSTGRES_PASSWORD = get_env_variable("POSTGRES_PASSWORD")
@@ -47,11 +47,9 @@ app.lifespan = lifespan
 def create_db_and_tables():
     # TODO: Add error handling around the database initialization to manage 
     # cases where the connection fails or credentials are incorrect.
+    # TODO: Run the sql script??
     SQLModel.metadata.create_all(bind=engine)
 
-# def get_db() -> Generator[Session, None, None]:  # pragma: no cover
-#     with Session(engine) as session:
-#         yield session
 
 
 @router.get("/")

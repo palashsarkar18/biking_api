@@ -17,7 +17,7 @@ services:
       - db
     volumes:
       - ./:/workspace
-      - .env:/workspace/.env
+      - .env:/workspace/.env # TODO: Shouldn't the above statement also includes this, and it is redundant?
     ports:
       - 8080:8080
 
@@ -28,6 +28,7 @@ services:
     depends_on:
       - db
     volumes:
+      - ./:/workspace # TODO: Shouldn't the above statement also includes this, and it is redundant?
       - .env:/workspace/.env
     command: ["pytest", "tests/", "--cov=app", "--cov-report=term-missing"]
 
