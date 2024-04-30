@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Session
-from app import models
 from sqlalchemy import or_
+from sqlalchemy.orm import Session
+
+from app import models
 
 
 def get_bikes(db: Session, skip: int = 0, limit: int = 10, org_id: int = None,

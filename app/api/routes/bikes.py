@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from typing import List
 from sqlalchemy.orm import Session
-from app.core.dependencies import get_db
+from app.core.db import get_db
 from app.crud import get_bikes
 from app.schemas import BikeList
 

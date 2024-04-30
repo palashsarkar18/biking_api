@@ -1,5 +1,6 @@
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -10,5 +11,7 @@ def get_env_variable(name: str) -> str:
     """
     value = os.getenv(name)
     if value is None or value.strip() == "":
-        raise EnvironmentError(f"Missing required environment variable: {name}")
+        raise EnvironmentError(
+            f"Missing required environment variable: {name}"
+            )
     return value

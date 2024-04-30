@@ -1,12 +1,14 @@
-from typing import Generator
 import pytest
+
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, database_exists, drop_database
 from sqlmodel import Session, SQLModel
+from typing import Generator
 
-from app.main import app, get_db
 from app.core.config import get_env_variable
+from app.core.db import get_db
+from app.main import app
 
 POSTGRES_USER = get_env_variable("POSTGRES_USER")
 POSTGRES_PASSWORD = get_env_variable("POSTGRES_PASSWORD")
@@ -45,5 +47,7 @@ def client() -> Generator[TestClient, None, None]:
         yield test_client
 
 # TODO:
-# 1. Check why conftest file is not running with pytest. It is actually running. However. the tests/ log does not mention.
-# 2. Check why vapaus-test was defined as such. vapaus_test is actually created, and then deleted.
+# 1. Check why conftest file is not running with pytest. It is actually 
+# running. However. the tests/ log does not mention.
+# 2. Check why vapaus-test was defined as such. vapaus_test is actually 
+# created, and then deleted.
