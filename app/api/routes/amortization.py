@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import Dict
 from decimal import Decimal
-from  ....plans import STARTER_PLAN, PRO_PLAN, ENTERPRISE_PLAN
+from app.plans import STARTER_PLAN, PRO_PLAN, ENTERPRISE_PLAN
 
 router = APIRouter()
 
@@ -16,7 +16,8 @@ def get_plan(plan_type: str):
     else:
         return None
 
-@router.get("/amortization/")
+
+@router.get("/")
 def calculate_amortization(plan_type: str, bike_price: float) -> Dict:
     plan = get_plan(plan_type)
     if not plan:

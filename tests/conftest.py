@@ -6,7 +6,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 from sqlmodel import Session, SQLModel
 
 from app.main import app, get_db
-from app.config import get_env_variable
+from app.core.config import get_env_variable
 
 POSTGRES_USER = get_env_variable("POSTGRES_USER")
 POSTGRES_PASSWORD = get_env_variable("POSTGRES_PASSWORD")

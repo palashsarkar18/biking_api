@@ -5,11 +5,10 @@ from contextlib import asynccontextmanager
 from sqlalchemy.exc import OperationalError, DatabaseError
 from sqlalchemy_utils import create_database, database_exists
 import logging
-
 from sqlalchemy import text
-from .api.api_v1.endpoints import bikes, amortization
-from .dependencies import get_db
-from .config import get_env_variable
+from app.core.dependencies import get_db
+from app.core.config import get_env_variable
+from app.api.main import api_router
 
 POSTGRES_USER = get_env_variable("POSTGRES_USER")
 POSTGRES_PASSWORD = get_env_variable("POSTGRES_PASSWORD")
@@ -107,7 +106,6 @@ def read_index(db: Session = Depends(get_db)) -> Any:
 
 
 app.include_router(router)
-app.include_router(bikes.router, prefix="/api/v1")
-app.include_router(amortization.router, prefix="/api/v1")
+app.include_router(api_router, prefix="/api/v1")
 
 # TODO: Reevaluate the project structure.

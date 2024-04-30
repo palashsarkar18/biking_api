@@ -1,7 +1,7 @@
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import create_engine, Session
 from typing import Generator
-from .config import get_env_variable
+from app.core.config import get_env_variable
 
 POSTGRES_USER = get_env_variable("POSTGRES_USER")
 POSTGRES_PASSWORD = get_env_variable("POSTGRES_PASSWORD")

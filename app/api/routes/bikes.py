@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends
 from typing import List
 from sqlalchemy.orm import Session
-from ....dependencies import get_db
-from ....crud import get_bikes
-from ....schemas import BikeList
+from app.core.dependencies import get_db
+from app.crud import get_bikes
+from app.schemas import BikeList
 
 router = APIRouter()
 
-@router.get("/bikes/", response_model=List[BikeList])
+
+@router.get("/", response_model=List[BikeList])
 def read_bikes(
     skip: int = 0, 
     limit: int = 10, 

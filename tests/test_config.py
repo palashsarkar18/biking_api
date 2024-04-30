@@ -1,5 +1,5 @@
 import pytest
-from app.config import get_env_variable
+from app.core.config import get_env_variable
 
 
 def test_get_env_variable_existing(monkeypatch):
