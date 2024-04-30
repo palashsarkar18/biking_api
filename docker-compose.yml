@@ -17,6 +17,7 @@ services:
       - db
     volumes:
       - ./:/workspace
+      - .env:/workspace/.env
     ports:
       - 8080:8080
 
@@ -26,6 +27,8 @@ services:
       dockerfile: Dockerfile.test
     depends_on:
       - db
+    volumes:
+      - .env:/workspace/.env
     command: ["pytest", "tests/", "--cov=app", "--cov-report=term-missing"]
 
 volumes:

@@ -1,10 +1,18 @@
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import create_engine, Session
 from typing import Generator
+from .helpers import get_env_variable
 
-# Assuming SQLModel which wraps SQLAlchemy
-DATABASE_URL = "postgresql://postgres:db580f2e939baa98cb393fa1b680c6b17072ff1b42b0669f575c0f93e525a8d3@db:5432/vapaus" # TODO: Get the password from the environment
-engine = create_engine(DATABASE_URL)
+POSTGRES_USER = get_env_variable("POSTGRES_USER")
+POSTGRES_PASSWORD = get_env_variable("POSTGRES_PASSWORD")
+POSTGRES_SERVER = get_env_variable("POSTGRES_SERVER")
+POSTGRES_PORT = get_env_variable("POSTGRES_PORT")
+POSTGRES_DB = get_env_variable("POSTGRES_DB")
+
+DATABASE_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}" \
+               f"@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
+
+engine = create_engine(DATABASE_URI)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

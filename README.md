@@ -1,3 +1,20 @@
+## Run
+
+docker-compose up -d --build
+
+docker ps
+docker exec -it <container_id_or_name> bash
+docker-compose up tests
+
+docker-compose down
+docker-compose down -v  # This removes the containers along with their volumes
+docker-compose up -d    # This recreates the containers and volumes, and starts them
+
+
+docker-compose logs -f
+
+
+
 ## Bugs in the assignment
 
 * `assignment.md` states "Once you have managed to create the tables, you can find a dump in the data folder to populate it." However, there was no code snippet to do so. Hence I defined SQL scripts to create the tables and dump the values.
