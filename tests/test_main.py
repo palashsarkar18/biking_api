@@ -10,6 +10,10 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logging.getLogger().handlers = [logging.StreamHandler()]
 
 
+def mock_get_db():
+    return Exception("Database connection error")
+
+
 def test_index() -> None:
     """
     Tests the main '/' endpoint.
@@ -28,21 +32,14 @@ def test_database_connection_failure(monkeypatch):
     """
     Tests '/' endpoint handling a database connection error.
     """
-    def mock_get_db():
-        raise Exception("Database connection error")
-
     # Override get_db dependency
     app.dependency_overrides[get_db] = mock_get_db
 
     client = TestClient(app)
 
-    try:
-        # TODO: Adding try catch block is wrong in here
-        response = client.get("/")
-        assert response.status_code == 200
-        assert response.json() == {"database_connected": False}
-    except Exception as e:
-        logging.error(f"Test error: {e}")
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"database_connected": False}
 
     # Clear override
     app.dependency_overrides.clear()
