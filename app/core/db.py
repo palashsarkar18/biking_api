@@ -1,6 +1,7 @@
 import logging
 
 from sqlalchemy import text
+from sqlalchemy.engine.base import Engine
 from sqlalchemy.exc import OperationalError, DatabaseError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists
@@ -46,20 +47,26 @@ def read_sql_file(file_path: str) -> str:
     return sql_content
 
 
-def create_db_and_tables():
-    """Initializes the database and tables, managing errors."""
-    if not database_exists(DATABASE_URI):
-        create_database(DATABASE_URI)  # Create current database if not exists
+def create_db_and_tables(
+        uri: str = DATABASE_URI,
+        eng: Engine = engine,
+        file_path: str = "/workspace/data/dump.sql"
+        ):
+    """
+    Initializes the database and tables, managing errors.
+    """
+    if not database_exists(uri):
+        create_database(uri)  # Create current database if not exists
 
     # Create tables defined in SQLModel metadata
-    SQLModel.metadata.create_all(bind=engine)
+    SQLModel.metadata.create_all(bind=eng)
 
     try:
-        with Session(engine) as session:
+        with Session(eng) as session:
             session.execute(text("SELECT 1"))
 
             # Read and execute SQL script files
-            sql_content = read_sql_file("/workspace/data/dump.sql")
+            sql_content = read_sql_file(file_path)
             session.execute(text(sql_content))
 
             session.commit()
