@@ -3,7 +3,7 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter, Depends
 from sqlalchemy import text
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 from typing import Any
 
 from app.api.main import api_router

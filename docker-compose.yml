@@ -25,6 +25,7 @@ services:
       dockerfile: Dockerfile.test
     depends_on:
       - db
+      - server
     volumes:
       - ./:/workspace
     command: ["pytest", "tests/", "--cov=app", "--cov-report=term-missing"]

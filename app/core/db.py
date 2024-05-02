@@ -1,14 +1,14 @@
 import logging
 
-from sqlalchemy import text
+from sqlalchemy import text, create_engine
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.exc import OperationalError, DatabaseError
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy_utils import create_database, database_exists
-from sqlmodel import create_engine, Session, SQLModel
 from typing import Generator
 
 from app.core.config import get_env_variable
+from app.models import Base
 
 # Initialize database configuration
 POSTGRES_USER = get_env_variable("POSTGRES_USER")
@@ -58,8 +58,8 @@ def create_db_and_tables(
     if not database_exists(uri):
         create_database(uri)  # Create current database if not exists
 
-    # Create tables defined in SQLModel metadata
-    SQLModel.metadata.create_all(bind=eng)
+    # Create tables defined in SQLAlchemy metadata
+    Base.metadata.create_all(bind=eng)
 
     try:
         with Session(eng) as session:
