@@ -12,6 +12,9 @@ class BikeBase(BaseModel):
     brand: str | None = None
     model: str | None = None
 
+    # Enables converting from SQLAlchemy ORM objects to Pydantic models
+    model_config = ConfigDict(from_attributes=True)
+
 
 class BikeList(BikeBase):
     """

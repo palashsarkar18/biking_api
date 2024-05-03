@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship, declarative_base
 Base = declarative_base()
 
 
-class Organisations(Base):
+class Organisations(Base):  # type: ignore
     """
     Defines the Organisations table and its mapping to Python classes.
     """
@@ -20,7 +20,7 @@ class Organisations(Base):
     bikes = relationship("Bikes", back_populates="organisation")
 
 
-class Bikes(Base):
+class Bikes(Base):  # type: ignore
     """
     Defines the Bikes table and its mapping to Python classes.
     """

@@ -13,7 +13,7 @@ def read_bikes(
     skip: int = 0,
     limit: int = 10,
     org_id: int | None = None,
-    search: str | None = None,
+    search: str | None = "",
     db: Session = Depends(get_db)
 ) -> List[BikeList]:
     """
@@ -30,4 +30,5 @@ def read_bikes(
         List[BikeList]: A list of bikes that match the filtering and pagination criteria.
     """
     bikes = get_bikes(db, skip=skip, limit=limit, org_id=org_id, search=search)
-    return bikes
+    # Convert SQLAlchemy model instances to Pydantic model instances
+    return [BikeList.model_validate(bike) for bike in bikes]

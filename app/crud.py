@@ -6,7 +6,7 @@ from app import models
 
 
 def get_bikes(
-    db: Session, skip: int = 0, limit: int = 10, org_id: int | None = None, search: str = ""
+    db: Session, skip: int = 0, limit: int = 10, org_id: int | None = None, search: str | None = ""
 ) -> list[models.Bikes]:
     """
     Fetches a list of bikes from the database with optional filtering.

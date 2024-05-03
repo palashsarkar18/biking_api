@@ -128,7 +128,7 @@ def test_integration_amortization(client: TestClient):
     # Define inputs for the amortization endpoint
     inputs = {
         "plan_type": "starter",
-        "bike_price": 2000  # Set a bike price for the test
+        "bike_price": "2000"  # Set a bike price for the test
     }
 
     # Make a GET request to the amortization endpoint
