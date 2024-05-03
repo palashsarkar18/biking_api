@@ -1,7 +1,6 @@
 import logging
 
 from sqlalchemy import text, create_engine
-from sqlalchemy.engine.base import Engine
 from sqlalchemy.exc import OperationalError, DatabaseError
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy_utils import create_database, database_exists
@@ -47,29 +46,31 @@ def read_sql_file(file_path: str) -> str:
     return sql_content
 
 
-def create_db_and_tables(
-        uri: str = DATABASE_URI,
-        eng: Engine = engine,
-        file_path: str = "/workspace/data/dump.sql"
-        ):
+def create_db_and_tables():
     """
     Initializes the database and tables, managing errors.
     """
-    if not database_exists(uri):
-        create_database(uri)  # Create current database if not exists
+    if not database_exists(DATABASE_URI):
+        logging.info("Creating database tables")
+        create_database(DATABASE_URI)  # Create current database if not exists
 
     # Create tables defined in SQLAlchemy metadata
-    Base.metadata.create_all(bind=eng)
+    Base.metadata.create_all(bind=engine)
 
     try:
-        with Session(eng) as session:
-            session.execute(text("SELECT 1"))
-
-            # Read and execute SQL script files
-            sql_content = read_sql_file(file_path)
-            session.execute(text(sql_content))
-
-            session.commit()
+        with Session(engine) as session:
+            # Check if the primary table is empty
+            bikes_count = session.execute(
+                text("SELECT COUNT(*) FROM bikes;")
+                ).scalar()
+            logging.info(f"bikes_count: {bikes_count}")
+            if bikes_count == 0:
+                # Populate the database if empty.
+                # Both the bikes and organisations tables are added.
+                sql_content = read_sql_file("/workspace/data/dump.sql")
+                session.execute(text(sql_content))
+                session.commit()
+            logging.info("Database setup complete.")
     except OperationalError as oe:
         session.rollback()
         logging.error(f"Database connection error: {oe}")

@@ -20,13 +20,11 @@ logging.getLogger().handlers = [logging.StreamHandler()]
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup logic
-    logging.info("Starting up... creating database tables")
+    logging.info("Starting up.")
     try:
         create_db_and_tables()
-        logging.info("Database tables created successfully.")
     except Exception as e:
-        logging.error(f"Error creating tables: {e}")
-
+        logging.error(f"Error in initializing tables: {e}")
     yield
 
     logging.info("Application shutting down...")
@@ -56,5 +54,3 @@ def read_index(db: Session = Depends(get_db)) -> Any:
 
 app.include_router(router)
 app.include_router(api_router, prefix="/api/v1")
-
-# TODO: Reevaluate the project structure.

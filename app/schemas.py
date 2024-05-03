@@ -1,15 +1,14 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
 
 
 class BikeBase(BaseModel):
-    brand: Optional[str] = None
-    model: Optional[str] = None
+    brand: str | None = None
+    model: str | None = None
 
 
 class BikeList(BikeBase):
     id: int
-    organisation_id: Optional[int] = None
+    organisation_id: int | None = None
     price: float
     serial_number: str
 

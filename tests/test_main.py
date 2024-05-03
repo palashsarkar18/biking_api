@@ -1,13 +1,7 @@
-import logging
-
 from fastapi.testclient import TestClient
 
 from app.core.db import get_db
 from app.main import app
-
-# Initialize logging
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-logging.getLogger().handlers = [logging.StreamHandler()]
 
 
 def mock_get_db():

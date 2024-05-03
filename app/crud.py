@@ -12,7 +12,7 @@ def get_bikes(db: Session, skip: int = 0, limit: int = 10, org_id: int = None,
     if search:
         query = query.filter(
             or_(
-                models.Bikes.brand.ilike(f"%{search}%"), 
+                models.Bikes.brand.ilike(f"%{search}%"),
                 models.Bikes.model.ilike(f"%{search}%")
             )
         )
