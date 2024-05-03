@@ -8,7 +8,11 @@ from app.core.db import read_sql_file
 
 def populate_database(db: Session, file_path: str):
     """
-    Reads SQL content from a file and populates the database.
+    Populates the database by executing SQL statements from a given file.
+
+    Args:
+        db (Session): SQLAlchemy session object.
+        file_path (str): Path to the SQL file containing database population commands.
     """
     sql_content = read_sql_file(file_path)
     db.execute(text(sql_content))
@@ -17,7 +21,14 @@ def populate_database(db: Session, file_path: str):
 
 def get_bikes_response(client: TestClient, params: dict) -> list:
     """
-    Helper to get and parse bikes API response.
+    Makes an API call to retrieve bikes based on specified parameters.
+
+    Args:
+        client (TestClient): FastAPI test client for making API calls.
+        params (dict): Parameters to pass to the bikes endpoint.
+
+    Returns:
+        list: JSON response parsed into a list of dictionaries.
     """
     response = client.get("/api/v1/bikes", params=params)
     assert response.status_code == 200, f"Request failed: {response.text}"

@@ -7,18 +7,43 @@ router = APIRouter()
 
 
 def get_plan(plan_type: str):
-    if plan_type == "starter":
-        return STARTER_PLAN
-    elif plan_type == "pro":
-        return PRO_PLAN
-    elif plan_type == "enterprise":
-        return ENTERPRISE_PLAN
-    else:
-        return None
+    """
+    Retrieve a plan based on the provided plan type.
+
+    Args:
+        plan_type (str): The type of plan to retrieve.
+
+    Returns:
+        Plan: A plan object matching the provided type, or None if not found.
+    """
+    plans = {
+        "starter": STARTER_PLAN,
+        "pro": PRO_PLAN,
+        "enterprise": ENTERPRISE_PLAN,
+    }
+    return plans.get(plan_type)
 
 
 @router.get("/")
 def calculate_amortization(plan_type: str, bike_price: float) -> Dict:
+    """
+    Calculate the amortization schedule for a bike leasing contract.
+
+    Args:
+        plan_type (str): The type of leasing plan (e.g., "starter", "pro").
+        bike_price (float): The price of the bike being leased.
+
+    Returns:
+        dict: A dictionary containing:
+            - "leasing_duration": int, duration of the lease in months
+            - "total_interest_paid": float, total interest paid over the lease
+            - "residual_value": float, residual value of the bike
+            - "amortization_table": list of dicts, each dict containing:
+                - "month_number": int, the month number
+                - "loan_balance": float, the remaining balance after the payment
+                - "monthly_interest_payment": float, interest paid this month
+                - "monthly_principal_repayment": float, principal paid this month
+    """
     plan = get_plan(plan_type)
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
@@ -34,11 +59,9 @@ def calculate_amortization(plan_type: str, bike_price: float) -> Dict:
     for month in range(1, plan.max_duration_month + 1):
         if current_balance <= 0:
             break
+
         interest_payment = current_balance * monthly_interest_rate
-        principal_payment = min(
-            plan.monthly_payment - interest_payment,
-            current_balance
-            )
+        principal_payment = min(plan.monthly_payment - interest_payment, current_balance)
         current_balance -= principal_payment
 
         total_interest_paid += interest_payment
@@ -47,12 +70,12 @@ def calculate_amortization(plan_type: str, bike_price: float) -> Dict:
             "month_number": month,
             "loan_balance": float(current_balance),
             "monthly_interest_payment": float(interest_payment),
-            "monthly_principal_repayment": float(principal_payment)
+            "monthly_principal_repayment": float(principal_payment),
         })
 
     return {
         "leasing_duration": len(amortization_table),
         "total_interest_paid": float(total_interest_paid),
         "residual_value": float(residual_value),
-        "amortization_table": amortization_table
+        "amortization_table": amortization_table,
     }

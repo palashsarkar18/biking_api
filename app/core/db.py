@@ -29,7 +29,12 @@ logging.getLogger().handlers = [logging.StreamHandler()]
 
 
 def get_db() -> Generator[Session, None, None]:
-    """Provides a database session for use in dependencies."""
+    """
+    Provides a database session for use in dependencies.
+
+    Yields:
+        Session: An SQLAlchemy session connected to the configured database.
+    """
     db = SessionLocal()
     try:
         yield db
@@ -40,19 +45,28 @@ def get_db() -> Generator[Session, None, None]:
 def read_sql_file(file_path: str) -> str:
     """
     Reads an SQL script file and returns its content as a string.
+
+    Args:
+        file_path (str): The path to the SQL script file.
+
+    Returns:
+        str: The content of the SQL script file as a string.
     """
     with open(file_path, "r") as sql_file:
-        sql_content = sql_file.read()
-    return sql_content
+        return sql_file.read()
 
 
 def create_db_and_tables():
     """
     Initializes the database and tables, managing errors.
+
+    This function ensures the database and tables are created and, if empty,
+    populates them using an SQL script file. Errors during initialization
+    are logged.
     """
     if not database_exists(DATABASE_URI):
         logging.info("Creating database tables")
-        create_database(DATABASE_URI)  # Create current database if not exists
+        create_database(DATABASE_URI)
 
     # Create tables defined in SQLAlchemy metadata
     Base.metadata.create_all(bind=engine)
@@ -60,16 +74,15 @@ def create_db_and_tables():
     try:
         with Session(engine) as session:
             # Check if the primary table is empty
-            bikes_count = session.execute(
-                text("SELECT COUNT(*) FROM bikes;")
-                ).scalar()
+            bikes_count = session.execute(text("SELECT COUNT(*) FROM bikes;")).scalar()
             logging.info(f"bikes_count: {bikes_count}")
+
             if bikes_count == 0:
-                # Populate the database if empty.
-                # Both the bikes and organisations tables are added.
+                # Populate the database if empty
                 sql_content = read_sql_file("/workspace/data/dump.sql")
                 session.execute(text(sql_content))
                 session.commit()
+
             logging.info("Database setup complete.")
     except OperationalError as oe:
         session.rollback()

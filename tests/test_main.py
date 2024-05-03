@@ -10,7 +10,7 @@ def mock_get_db():
 
 def test_index() -> None:
     """
-    Tests the main '/' endpoint.
+    Tests the main '/' endpoint to check for database connectivity.
     """
     client = TestClient(app)
 

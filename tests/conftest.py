@@ -27,6 +27,8 @@ test_engine = create_engine(DATABASE_TEST_URI, pool_pre_ping=True)
 def setup_test_database():
     """
     Creates a clean test database every time the tests run.
+
+    Drops the existing database, creates a new one, and sets up the necessary tables.
     """
     # Drop existing database if it exists
     if database_exists(DATABASE_TEST_URI):
@@ -46,9 +48,10 @@ def setup_test_database():
 def db() -> Generator[Session, None, None]:
     """
     Provides a database session for use in tests.
+
+    Overrides the default session dependency in the app to use this session.
     """
     with Session(test_engine) as session:
-        # Override get_db dependency to use this session
         app.dependency_overrides[get_db] = lambda: session
         yield session
 

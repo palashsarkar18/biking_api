@@ -12,9 +12,22 @@ router = APIRouter()
 def read_bikes(
     skip: int = 0,
     limit: int = 10,
-    org_id: int = None,
-    search: str = None,
+    org_id: int | None = None,
+    search: str | None = None,
     db: Session = Depends(get_db)
-):
+) -> List[BikeList]:
+    """
+    Retrieve a list of bikes with optional filtering and pagination.
+
+    Args:
+        skip (int): The number of records to skip for pagination.
+        limit (int): The maximum number of records to return.
+        org_id (Optional[int]): An optional organization ID to filter the bikes by organization.
+        search (Optional[str]): An optional string to partially match against bike brands or models.
+        db (Session): The database session provided by the dependency injection system.
+
+    Returns:
+        List[BikeList]: A list of bikes that match the filtering and pagination criteria.
+    """
     bikes = get_bikes(db, skip=skip, limit=limit, org_id=org_id, search=search)
     return bikes
