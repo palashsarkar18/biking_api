@@ -77,3 +77,14 @@ def test_amortization_error():
 
     assert response.status_code == 404, "Expected 404 status for an invalid plan."
     assert response.json() == {"detail": "Plan not found"}
+
+
+def test_amortization_value_error():
+    """
+    Test amortization endpoint handling bike price over max principal.
+    """
+    response = client.get(
+        "/api/v1/amortization/?plan_type=enterprise&bike_price=6000"
+    )
+    assert response.status_code == 404, "Expected 404 status for overpriced bike"
+    assert response.json() == {"detail": "Bike price exceeds the maximum principal"}

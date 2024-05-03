@@ -1,7 +1,6 @@
 import logging
 
 from sqlalchemy import text, create_engine
-from sqlalchemy.exc import OperationalError, DatabaseError
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy_utils import create_database, database_exists
 from typing import Generator
@@ -84,12 +83,6 @@ def create_db_and_tables():
                 session.commit()
 
             logging.info("Database setup complete.")
-    except OperationalError as oe:
-        session.rollback()
-        logging.error(f"Database connection error: {oe}")
-    except DatabaseError as de:
-        session.rollback()
-        logging.error(f"Database initialization error: {de}")
     except Exception as e:
         session.rollback()
         logging.error(f"General error during initialization: {e}")

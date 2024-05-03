@@ -48,6 +48,10 @@ def calculate_amortization(plan_type: str, bike_price: float) -> Dict:
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
 
+    if bike_price > plan.max_principal:
+        raise HTTPException(status_code=404,
+                            detail="Bike price exceeds the maximum principal")
+
     residual_value: Decimal = Decimal(bike_price) * plan.residual_percentage
     initial_loan_balance: Decimal = Decimal(bike_price) - residual_value
     monthly_interest_rate = plan.annual_interest_rate / 12
@@ -68,14 +72,14 @@ def calculate_amortization(plan_type: str, bike_price: float) -> Dict:
 
         amortization_table.append({
             "month_number": month,
-            "loan_balance": float(current_balance),
-            "monthly_interest_payment": float(interest_payment),
-            "monthly_principal_repayment": float(principal_payment),
+            "loan_balance": round(float(current_balance), 2),
+            "monthly_interest_payment": round(float(interest_payment), 2),
+            "monthly_principal_repayment": round(float(principal_payment), 2),
         })
 
     return {
         "leasing_duration": len(amortization_table),
-        "total_interest_paid": float(total_interest_paid),
-        "residual_value": float(residual_value),
+        "total_interest_paid": round(float(total_interest_paid), 2),
+        "residual_value": round(float(residual_value), 2),
         "amortization_table": amortization_table,
     }

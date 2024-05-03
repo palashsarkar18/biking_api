@@ -40,6 +40,8 @@ async def lifespan(app: FastAPI):
     logging.info("Application shutting down...")
     engine.dispose()  # Closes the connection pool and terminates all active sessions
 
+app = FastAPI(lifespan=lifespan)
+
 
 @router.get("/")
 def read_index(db: Session = Depends(get_db)) -> Any:
