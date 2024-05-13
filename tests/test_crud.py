@@ -15,6 +15,10 @@ def mock_session():
     return MockSession()
 
 
+def mck_sqlachemyerror():
+    return SQLAlchemyError("Mocked error")
+
+
 def test_get_bikes_database_error(mock_session):
     """
     Test get_bikes function handling of database errors.
